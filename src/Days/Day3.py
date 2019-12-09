@@ -52,56 +52,7 @@ class Day3Puzzle1(Puzzle):
             if input_line != '':
                 wires.append(input_line.split(','))
 
-        coordinate_matrice = {}
-        intersections = []
-        wire_count = 0
-        for wire in wires:
-            o = Point(0, 0)
-            steps = 0
-            for command in wire:
-                direction, move = command[:1], int(command[1:])
-                if direction == 'L':
-                    while(move > 0):
-                        o.move_left()
-                        update_coordinates(coordinates=coordinate_matrice,
-                                           o=o, intersections=intersections,
-                                           step=steps, wire=wire_count)
-                        move -= 1
-                        steps += 1
-
-                elif direction == 'R':
-                    while(move > 0):
-                        o.move_right()
-                        update_coordinates(coordinates=coordinate_matrice,
-                                           o=o, intersections=intersections,
-                                           step=steps, wire=wire_count)
-                        move -= 1
-                        steps += 1
-
-                elif direction == 'U':
-                    while(move > 0):
-                        o.move_up()
-                        update_coordinates(coordinates=coordinate_matrice,
-                                           o=o, intersections=intersections,
-                                           step=steps, wire=wire_count)
-                        move -= 1
-                        steps += 1
-
-                elif direction == 'D':
-                    while(move > 0):
-                        o.move_down()
-                        update_coordinates(coordinates=coordinate_matrice,
-                                           o=o, intersections=intersections,
-                                           step=steps, wire=wire_count)
-                        move -= 1
-                        steps += 1
-
-                else:
-                    print("Unknown direction")
-
-            wire_count += 1
-
-            # coordinate_matrice = normalize_coordinate_matrice(coordinate_matrice)
+        intersections = get_intersections(wires=wires)
 
         min_distance = 100000000
         for i in intersections:
@@ -110,6 +61,97 @@ class Day3Puzzle1(Puzzle):
                 min_distance = md
 
         print("Solution for Day3 Puzzle1: {}".format(min_distance))
+
+
+class Day3Puzzle2(Puzzle):
+    """
+    Day3 Puzzle2 class
+    """
+
+    def solve(self):
+        print("Day3 - Puzzle2")
+        input_lines = self.input.split('\n')
+        wires = []
+        for input_line in input_lines:
+            if input_line != '':
+                wires.append(input_line.split(','))
+
+        intersections = get_intersections(wires=wires)
+
+        steps = {}
+        for i in intersections:
+            key = "{}_{}".format(str(i.x), str(i.y))
+            if key not in steps:
+                steps[key] = i.step
+            else:
+                steps[key] += i.step
+
+        min_steps = 100000000
+        for key in steps:
+            if steps[key] < min_steps:
+                min_steps = steps[key]
+
+        print("Solution for Day3 Puzzle2: {}".format(min_steps))
+
+
+def get_intersections(wires=[]):
+    """
+    This methods runs over the wires and detects the intersections
+    with list of useful stats.
+
+    Keyword Arguments:
+        wires {list} -- list of wires (default: {[]})
+    """
+    coordinate_matrice = {}
+    intersections = []
+    wire_count = 0
+    for wire in wires:
+        o = Point(0, 0)
+        steps = 0
+        for command in wire:
+            direction, move = command[:1], int(command[1:])
+            if direction == 'L':
+                while(move > 0):
+                    o.move_left()
+                    steps += 1
+                    update_coordinates(coordinates=coordinate_matrice,
+                                        o=o, intersections=intersections,
+                                        step=steps, wire=wire_count)
+                    move -= 1
+
+            elif direction == 'R':
+                while(move > 0):
+                    o.move_right()
+                    steps += 1
+                    update_coordinates(coordinates=coordinate_matrice,
+                                        o=o, intersections=intersections,
+                                        step=steps, wire=wire_count)
+                    move -= 1
+
+            elif direction == 'U':
+                while(move > 0):
+                    o.move_up()
+                    steps += 1
+                    update_coordinates(coordinates=coordinate_matrice,
+                                        o=o, intersections=intersections,
+                                        step=steps, wire=wire_count)
+                    move -= 1
+
+            elif direction == 'D':
+                while(move > 0):
+                    o.move_down()
+                    steps += 1
+                    update_coordinates(coordinates=coordinate_matrice,
+                                        o=o, intersections=intersections,
+                                        step=steps, wire=wire_count)
+                    move -= 1
+
+            else:
+                print("Unknown direction")
+
+        wire_count += 1
+
+    return intersections
 
 
 def update_coordinates(coordinates={}, o=None, intersections=[], step=0, wire=0):
@@ -132,84 +174,6 @@ def update_coordinates(coordinates={}, o=None, intersections=[], step=0, wire=0)
 
 def manhattan_distance_to_center(point):
     return abs(point.x) + abs(point.y)
-
-
-class Day3Puzzle2(Puzzle):
-    """
-    Day3 Puzzle2 class
-    """
-
-    def solve(self):
-        print("Day3 - Puzzle2")
-        input_lines = self.input.split('\n')
-        wires = []
-        for input_line in input_lines:
-            if input_line != '':
-                wires.append(input_line.split(','))
-
-        coordinate_matrice = {}
-        intersections = []
-        wire_count = 0
-        for wire in wires:
-            o = Point(0, 0)
-            steps = 0
-            for command in wire:
-                direction, move = command[:1], int(command[1:])
-                if direction == 'L':
-                    while(move > 0):
-                        o.move_left()
-                        steps += 1
-                        update_coordinates(coordinates=coordinate_matrice,
-                                           o=o, intersections=intersections,
-                                           step=steps, wire=wire_count)
-                        move -= 1
-
-                elif direction == 'R':
-                    while(move > 0):
-                        o.move_right()
-                        steps += 1
-                        update_coordinates(coordinates=coordinate_matrice,
-                                           o=o, intersections=intersections,
-                                           step=steps, wire=wire_count)
-                        move -= 1
-
-                elif direction == 'U':
-                    while(move > 0):
-                        o.move_up()
-                        steps += 1
-                        update_coordinates(coordinates=coordinate_matrice,
-                                           o=o, intersections=intersections,
-                                           step=steps, wire=wire_count)
-                        move -= 1
-
-                elif direction == 'D':
-                    while(move > 0):
-                        o.move_down()
-                        steps += 1
-                        update_coordinates(coordinates=coordinate_matrice,
-                                           o=o, intersections=intersections,
-                                           step=steps, wire=wire_count)
-                        move -= 1
-
-                else:
-                    print("Unknown direction")
-
-            wire_count += 1
-
-        steps = {}
-        for i in intersections:
-            key = "{}_{}".format(str(i.x), str(i.y))
-            if key not in steps:
-                steps[key] = i.step
-            else:
-                steps[key] += i.step
-
-        min_steps = 1000000000
-        for key in steps:
-            if steps[key] < min_steps:
-                min_steps = steps[key]
-
-        print("Solution for Day3 Puzzle2: {}".format(min_steps))
 
 
 class Day3(Day):
